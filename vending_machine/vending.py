@@ -68,7 +68,7 @@ def print_vending_machine(items, prices):  # keep text formatting here
                     len_diff = len(p) - len(i)
                     item_line[n] += (' ' * len_diff)
                 else:
-                    len_diff = 8 - len(p)
+                    len_diff = int(8) - len(p)
                     price_line[n] += (' ' * len_diff)
 
             print(' || '.join(item_line))
@@ -93,7 +93,7 @@ def runner():
     money = float(input())
 
     sold_out_list = []
-    while (any(prices) != 'SOLD OUT') or (money <= 0):
+    while (any(prices) != 'SOLD OUT') or (money > 0):
         if len(sold_out_list) == len(items):
             os.system('clear')
             print("This machine is empty!\n")
