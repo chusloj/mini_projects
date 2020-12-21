@@ -11,6 +11,7 @@ class Board():
         # board representation
         self.env_map = [[' ' for _ in range(bwidth)] for _ in range(blen)]
         self.piece_loc = []
+        self.piece_rot = False
 
         # Initialization settings
         self.stdscr = curses.initscr()
@@ -52,6 +53,7 @@ class Board():
 
             for i, j in self.piece_loc:
                 Erase(i, j)
+            for i, j in self.piece_loc:
                 Write(i+1, j, '#')
 
             for n, (i, j) in enumerate(self.piece_loc):
@@ -63,6 +65,7 @@ class Board():
 
             for i, j in self.piece_loc:
                 Erase(i, j)
+            for i, j in self.piece_loc:
                 Write(i-1, j, '#')
 
             for n, (i, j) in enumerate(self.piece_loc):
@@ -93,14 +96,32 @@ class Board():
                 self.piece_loc[n][1] = j+1
 
         elif k == ord('r'):
-            for i, j in self.piece_loc:
-                Erase(i, j)
 
-            for n, (i, j) in enumerate(self.piece_loc):
-                self.piece_loc[n] = [j, i]
+            if self.piece_rot == False:
+                left_col = min(i[1] for i in self.piece_loc)
+                for i, j in self.piece_loc:
+                    Erase(i, j)
 
-            for i, j in self.piece_loc:
-                Write(i, j, '#')
+                for n, (i, j) in enumerate(self.piece_loc):
+                    self.piece_loc[n] = [j - left_col + i, left_col]
+
+                for i, j in self.piece_loc:
+                    Write(i, j, '#')
+
+                self.piece_rot = True
+
+            else:
+                top_row = min(i[0] for i in self.piece_loc)
+                for i, j in self.piece_loc:
+                    Erase(i, j)
+
+                for n, (i, j) in enumerate(self.piece_loc):
+                    self.piece_loc[n] = [top_row, i - top_row + j]
+
+                for i, j in self.piece_loc:
+                    Write(i, j, '#')
+
+                self.piece_rot = False
 
 
 
