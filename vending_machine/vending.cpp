@@ -92,7 +92,7 @@ int get_index_of_items(int num, string choice, string item_array[]){
 			return i;
 		}
 	}
-	return 404; // code that something's wrong
+	return 404; // <- means something is wrong
 }
 
 
