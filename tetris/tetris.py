@@ -1,5 +1,7 @@
 import curses
-# from curses import wrapper
+import time
+from time import sleep
+import keyboard
 
 class Board():
 
@@ -129,15 +131,22 @@ class Board():
 
 
 
+
+
 def main():
 
     b = Board(12, 18)
 
-    k = b.stdscr.getch()
-    while k != ord('q'):
-        b.Move_Piece(k)
-        b.stdscr.refresh()
+    while True:
+        b.stdscr.timeout(0) # enables automatic drop of piece after 1 second
         k = b.stdscr.getch()
+        a = time.time()
+        while time.time() - a < 1.5:
+            b.Move_Piece(k)
+            b.stdscr.refresh()
+            k = b.stdscr.getch()
+        b.Move_Piece(curses.KEY_DOWN)
+        b.stdscr.refresh()
 
     # # end program
     curses.nocbreak()
