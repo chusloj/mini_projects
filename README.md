@@ -5,4 +5,6 @@ Smaller projects.
 Current projects:
 
 - [Vending machine](vending_machine)
-- [Tetris](tetris) (`C`/`C++` only)
+- [Tetris](tetris)
+	- [ ] `Python`
+	- [ ] `Java`
