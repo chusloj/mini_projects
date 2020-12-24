@@ -64,18 +64,6 @@ class Board():
                     self.Write_Piece_To_Board()
                     self.Make_New_Piece()
 
-        # elif k == curses.KEY_UP:
-        #     if min([i[0] for i in self.piece_loc]) == 0:
-        #         return
-
-        #     for i, j in self.piece_loc:
-        #         Erase(i, j)
-        #     for i, j in self.piece_loc:
-        #         Write(i-1, j, '#')
-
-        #     for n, (i, j) in enumerate(self.piece_loc):
-        #         self.piece_loc[n][0] = i-1
-
         elif k == curses.KEY_LEFT:
             if min([i[1] for i in self.piece_loc]) == 1:
                 return
