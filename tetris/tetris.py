@@ -2,6 +2,7 @@ import curses
 import time
 from time import sleep
 import keyboard
+import sys
 
 class Board():
 
@@ -12,8 +13,6 @@ class Board():
         
         # board representation
         self.env_map = [[' ' for _ in range(bwidth)] for _ in range(blen)]
-        self.piece_loc = []
-        self.piece_rot = False
 
         # Initialization settings
         self.stdscr = curses.initscr()
@@ -34,10 +33,9 @@ class Board():
             self.stdscr.addstr(self.blen, i, '#')
 
         # test piece
-        for i in range(3,7):
-            self.stdscr.addstr(0, i, '#')
-            self.piece_loc.append( [0, i] )
+        self.Make_New_Piece()
 
+        # refresh screen
         self.stdscr.refresh()
 
 
@@ -50,6 +48,10 @@ class Board():
             self.stdscr.addstr(row, col, ' ')
 
         if k == curses.KEY_DOWN:
+            for i, j in self.piece_loc:
+                if (self.env_map[i+1][j] == '#') or (i == self.blen):
+                    self.Make_New_Piece()
+
             if max([i[0] for i in self.piece_loc]) == (self.blen - 1):
                 return
 
@@ -61,17 +63,17 @@ class Board():
             for n, (i, j) in enumerate(self.piece_loc):
                 self.piece_loc[n][0] = i+1
 
-        elif k == curses.KEY_UP:
-            if min([i[0] for i in self.piece_loc]) == 0:
-                return
+        # elif k == curses.KEY_UP:
+        #     if min([i[0] for i in self.piece_loc]) == 0:
+        #         return
 
-            for i, j in self.piece_loc:
-                Erase(i, j)
-            for i, j in self.piece_loc:
-                Write(i-1, j, '#')
+        #     for i, j in self.piece_loc:
+        #         Erase(i, j)
+        #     for i, j in self.piece_loc:
+        #         Write(i-1, j, '#')
 
-            for n, (i, j) in enumerate(self.piece_loc):
-                self.piece_loc[n][0] = i-1
+        #     for n, (i, j) in enumerate(self.piece_loc):
+        #         self.piece_loc[n][0] = i-1
 
         elif k == curses.KEY_LEFT:
             if min([i[1] for i in self.piece_loc]) == 1:
@@ -98,7 +100,6 @@ class Board():
                 self.piece_loc[n][1] = j+1
 
         elif k == ord('r'):
-
             if self.piece_rot == False:
                 left_col = min(i[1] for i in self.piece_loc)
                 for i, j in self.piece_loc:
@@ -126,6 +127,23 @@ class Board():
                 self.piece_rot = False
 
 
+        elif k == ord('q'):
+            curses.nocbreak()
+            self.stdscr.keypad(False)
+            curses.echo()
+            curses.endwin()
+            sys.exit()
+
+
+
+    def Make_New_Piece(self):
+        self.piece_loc = []
+        self.piece_rot = False
+        for i in range(3,7):
+            self.stdscr.addstr(0, i, '#')
+            self.piece_loc.append( [0, i] )
+
+
 
 
 
@@ -137,9 +155,9 @@ def main():
 
     b = Board(12, 18)
 
-    while True:
-        b.stdscr.timeout(0) # enables automatic drop of piece after 1 second
-        k = b.stdscr.getch()
+    b.stdscr.timeout(0) # enables automatic drop of piece after 1 second
+    k = b.stdscr.getch()
+    while k != ord('q'):
         a = time.time()
         while time.time() - a < 1.5:
             b.Move_Piece(k)
@@ -147,11 +165,6 @@ def main():
             k = b.stdscr.getch()
         b.Move_Piece(curses.KEY_DOWN)
         b.stdscr.refresh()
-
-    # # end program
-    curses.nocbreak()
-    b.stdscr.keypad(False)
-    curses.echo()
-    curses.endwin()
+        k = b.stdscr.getch()
 
 main()
