@@ -48,12 +48,8 @@ class Board():
             self.stdscr.addstr(row, col, ' ')
 
         if k == curses.KEY_DOWN:
-            for i, j in self.piece_loc:
-                if (self.env_map[i+1][j] == '#') or (i == self.blen):
-                    self.Make_New_Piece()
-
-            if max([i[0] for i in self.piece_loc]) == (self.blen - 1):
-                return
+            # if max([i[0] for i in self.piece_loc]) == (self.blen - 1):
+                # return
 
             for i, j in self.piece_loc:
                 Erase(i, j)
@@ -62,6 +58,11 @@ class Board():
 
             for n, (i, j) in enumerate(self.piece_loc):
                 self.piece_loc[n][0] = i+1
+
+            for i, j in self.piece_loc:
+                if (i == self.blen-1) or (self.env_map[i+1][j] == '#'):
+                    self.Write_Piece_To_Board()
+                    self.Make_New_Piece()
 
         # elif k == curses.KEY_UP:
         #     if min([i[0] for i in self.piece_loc]) == 0:
@@ -143,6 +144,10 @@ class Board():
             self.stdscr.addstr(0, i, '#')
             self.piece_loc.append( [0, i] )
 
+    def Write_Piece_To_Board(self):
+        for p0, p1 in self.piece_loc:
+            self.env_map[p0][p1] = '#'
+
 
 
 
@@ -157,7 +162,7 @@ def main():
 
     b.stdscr.timeout(0) # enables automatic drop of piece after 1 second
     k = b.stdscr.getch()
-    while k != ord('q'):
+    while True:
         a = time.time()
         while time.time() - a < 1.5:
             b.Move_Piece(k)
