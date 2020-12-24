@@ -3,6 +3,7 @@ import time
 from time import sleep
 import keyboard
 import sys
+import numpy as np
 
 class Board():
 
@@ -147,11 +148,14 @@ class Board():
             self.env_map[p0][p1] = '#'
 
     def Check_Advance_Game(self):
-        lowest_row = min([x[0] for x in self.piece_loc])
+        lowest_row = max([x[0] for x in self.piece_loc])
         if all(p == '#' for p in self.env_map[lowest_row]):
+            
             for p in self.env_map[lowest_row]:
-                p = ' '
-            for ind in range(len(self.env_map[lowest_row])):
+                if self.env_map[lowest_row].index(p) > 1:
+                    p = ' '
+
+            for ind in range(1, self.bwidth):
                 self.stdscr.addstr(lowest_row, ind, ' ')
 
 
