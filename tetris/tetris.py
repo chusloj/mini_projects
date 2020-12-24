@@ -13,6 +13,8 @@ class Board():
         
         # board representation
         self.env_map = [[' ' for _ in range(bwidth)] for _ in range(blen)]
+        for r in self.env_map:
+            r[0] = '#'
 
         # Initialization settings
         self.stdscr = curses.initscr()
@@ -25,15 +27,21 @@ class Board():
         self.stdscr.clear()
 
         # Draw board
-        for i in range(0, self.blen+1):
+        for i in range(self.blen+1):
             self.stdscr.addstr(i, 0, '#')
             self.stdscr.addstr(i, self.bwidth, '#')
 
-        for i in range(0, self.bwidth+1):
+        for i in range(self.bwidth+1):
             self.stdscr.addstr(self.blen, i, '#')
 
-        # test piece
-        self.Make_New_Piece()
+        # Initialize piece settings
+        self.piece_loc = []
+        self.piece_rot = False
+        
+        # first piece
+        for i in range(3,7):
+            self.stdscr.addstr(0, i, '#')
+            self.piece_loc.append( [0, i] )
 
         # refresh screen
         self.stdscr.refresh()
@@ -62,6 +70,7 @@ class Board():
             for i, j in self.piece_loc:
                 if (i == self.blen-1) or (self.env_map[i+1][j] == '#'):
                     self.Write_Piece_To_Board()
+                    self.Check_Advance_Game()
                     self.Make_New_Piece()
 
         elif k == curses.KEY_LEFT:
@@ -121,13 +130,14 @@ class Board():
             self.stdscr.keypad(False)
             curses.echo()
             curses.endwin()
-            sys.exit()
+            sys.exit("Quit game.")
 
 
 
     def Make_New_Piece(self):
         self.piece_loc = []
         self.piece_rot = False
+
         for i in range(3,7):
             self.stdscr.addstr(0, i, '#')
             self.piece_loc.append( [0, i] )
@@ -135,6 +145,15 @@ class Board():
     def Write_Piece_To_Board(self):
         for p0, p1 in self.piece_loc:
             self.env_map[p0][p1] = '#'
+
+    def Check_Advance_Game(self):
+        lowest_row = min([x[0] for x in self.piece_loc])
+        if all(p == '#' for p in self.env_map[lowest_row]):
+            for p in self.env_map[lowest_row]:
+                p = ' '
+            for ind in range(len(self.env_map[lowest_row])):
+                self.stdscr.addstr(lowest_row, ind, ' ')
+
 
 
 
@@ -146,7 +165,7 @@ class Board():
 
 def main():
 
-    b = Board(12, 18)
+    b = Board(12, 8)
 
     b.stdscr.timeout(0) # enables automatic drop of piece after 1 second
     k = b.stdscr.getch()
@@ -161,3 +180,8 @@ def main():
         k = b.stdscr.getch()
 
 main()
+
+
+# TODO: find way to make sure that the env_map DOES NOT contain //
+# // the actual boundaries of the board. This will ensure that //
+# // Check_Advance_Game() will work
