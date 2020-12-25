@@ -150,11 +150,7 @@ class Board():
     def Check_Advance_Game(self):
         lowest_row = max([x[0] for x in self.piece_loc])
         if all(p == '#' for p in self.env_map[lowest_row]):
-            
-            for p in self.env_map[lowest_row]:
-                if self.env_map[lowest_row].index(p) > 1:
-                    p = ' '
-
+            self.env_map[lowest_row][:] = list(['#'] + [' ' for _ in range(self.bwidth-1)])
             for ind in range(1, self.bwidth):
                 self.stdscr.addstr(lowest_row, ind, ' ')
 
@@ -162,14 +158,9 @@ class Board():
 
 
 
-
-
-
-
-
 def main():
 
-    b = Board(12, 8)
+    b = Board(12, 9)
 
     b.stdscr.timeout(0) # enables automatic drop of piece after 1 second
     k = b.stdscr.getch()
@@ -183,9 +174,5 @@ def main():
         b.stdscr.refresh()
         k = b.stdscr.getch()
 
+# Driver
 main()
-
-
-# TODO: find way to make sure that the env_map DOES NOT contain //
-# // the actual boundaries of the board. This will ensure that //
-# // Check_Advance_Game() will work
