@@ -159,18 +159,13 @@ class Board():
         lowest_row = max([x[0] for x in self.piece_loc])
         if all(p == '#' for p in self.env_map[lowest_row]):
             self.env_map[lowest_row][:] = list(['#'] + [' ' for _ in range(self.bwidth-1)])
-            for ind in range(1, self.bwidth):
-                self.stdscr.addstr(lowest_row, ind, ' ')
             self.env_map = list(self.env_map[-1:] + self.env_map[:-1])
             self.Redraw_Board()
 
     def Redraw_Board(self):
-        for row in self.env_map:
-            r_ind = self.env_map.index(row)
-            for col in row:
-                c_ind = row.index(col)
-                if c_ind > 1:
-                    self.stdscr.addstr(r_ind, c_ind, col)
+        for row in range(self.blen):
+            for col in range(1, self.bwidth):
+                self.stdscr.addstr(row, col, self.env_map[row][col])
 
 
 
