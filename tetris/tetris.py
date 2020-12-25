@@ -158,10 +158,34 @@ class Board():
     def Check_Advance_Game(self):
         lowest_row = max([x[0] for x in self.piece_loc])
         if all(p == '#' for p in self.env_map[lowest_row]):
-            self.env_map[lowest_row][:] = list(['#'] + [' ' for _ in range(self.bwidth-1)])
-            self.env_map = list(self.env_map[-1:] + self.env_map[:-1])
+            self.Finish_Row_Animation(lowest_row)
+            blank_row = list(['#'] + [' ' for _ in range(self.bwidth-1)])
+            self.env_map = list([blank_row] + self.env_map[:-1])
             self.Redraw_Board()
 
+    def Finish_Row_Animation(self, row):
+
+        def Flicker(sleep_time):
+            for col in range(1, self.bwidth):
+                self.stdscr.addstr(row, col, '=')
+           
+            self.stdscr.refresh() 
+            time.sleep(sleep_time)
+            
+            for col in range(1, self.bwidth):
+                self.stdscr.addstr(row, col, ' ')
+
+            self.stdscr.refresh() 
+            time.sleep(sleep_time)
+
+        sleep_time = 0.2
+        self.stdscr.timeout(int(1e5)) # argument is read in MILLIseconds
+        Flicker(sleep_time)
+        Flicker(sleep_time)
+        self.stdscr.timeout(0)
+
+
+    
     def Redraw_Board(self):
         for row in range(self.blen):
             for col in range(1, self.bwidth):
