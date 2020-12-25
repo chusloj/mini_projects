@@ -68,11 +68,16 @@ class Board():
             for n, (i, j) in enumerate(self.piece_loc):
                 self.piece_loc[n][0] = i+1
 
-            for i, j in self.piece_loc:
-                if (i == self.blen-1) or (self.env_map[i+1][j] == '#'):
+            # for i, j in self.piece_loc:
+            if not any(i == self.blen-1 for i, j in self.piece_loc):
+                if any((self.env_map[i+1][j] == '#') for i, j in self.piece_loc):
                     self.Write_Piece_To_Board()
                     self.Check_Advance_Game()
                     self.Make_New_Piece()
+            else:
+                self.Write_Piece_To_Board()
+                self.Check_Advance_Game()
+                self.Make_New_Piece()
 
         elif k == curses.KEY_LEFT:
             if min([i[1] for i in self.piece_loc]) == 1:
@@ -127,14 +132,17 @@ class Board():
 
 
         elif k == ord('q'):
-            curses.nocbreak()
-            self.stdscr.keypad(False)
-            curses.echo()
-            curses.endwin()
-            sys.exit("Quit game.")
+            self.Quit_Game()
 
 
 
+    def Quit_Game(self, msg="Quit Game."):
+        curses.nocbreak()
+        self.stdscr.keypad(False)
+        curses.echo()
+        curses.endwin()
+        sys.exit(msg)
+    
     def Make_New_Piece(self):
         self.piece_loc = []
         self.piece_rot = False
@@ -153,7 +161,16 @@ class Board():
             self.env_map[lowest_row][:] = list(['#'] + [' ' for _ in range(self.bwidth-1)])
             for ind in range(1, self.bwidth):
                 self.stdscr.addstr(lowest_row, ind, ' ')
+            self.env_map = list(self.env_map[-1:] + self.env_map[:-1])
+            self.Redraw_Board()
 
+    def Redraw_Board(self):
+        for row in self.env_map:
+            r_ind = self.env_map.index(row)
+            for col in row:
+                c_ind = row.index(col)
+                if c_ind > 1:
+                    self.stdscr.addstr(r_ind, c_ind, col)
 
 
 
