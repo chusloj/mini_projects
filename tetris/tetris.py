@@ -320,7 +320,7 @@ def main():
 
     print("What difficulty would you like to play on?")
     print("PRESS 'ENTER' AFTER MAKING YOUR CHOICE")
-    print("1: Easy", "2: Medium", "3: Hard", ": Very Hard")
+    print("1: Easy", "2: Medium", "3: Hard", "4: Very Hard")
 
     choice = input()
     wait_time = diff_dict[int(choice)]
