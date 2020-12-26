@@ -52,6 +52,9 @@ class Board():
             self.piece_loc = []
             self.piece_rot = False
 
+        if any(p == '#' for p in self.env_map[1]):
+            choice == 'a'
+
         if choice == 'Random':
             self.Generate_Piece(random.choice(['a', 'b']))
 
@@ -78,7 +81,10 @@ class Board():
         def Erase(row, col):
             self.stdscr.addstr(row, col, ' ')
 
+
         if k == curses.KEY_DOWN:
+        
+            self.Check_End_Of_Game()
 
             for i, j in self.piece_loc:
                 Erase(i, j)
@@ -129,11 +135,12 @@ class Board():
             self.Rotate_Piece(self.piece_style)
 
         elif k == ord('q'):
-            self.Quit_Game()
+            self.Quit_Game('quit')
 
 
 
     def Rotate_Piece(self, piece_style):
+        
         def Write(row, col, piece):
             self.stdscr.addstr(row, col, piece)
 
@@ -220,16 +227,11 @@ class Board():
                 
 
 
-    def Quit_Game(self, msg="Quit Game."):
-        curses.nocbreak()
-        self.stdscr.keypad(False)
-        curses.echo()
-        curses.endwin()
-        sys.exit(msg)
 
     def Write_Piece_To_Board(self):
         for p0, p1 in self.piece_loc:
             self.env_map[p0][p1] = '#'
+
 
     def Check_Advance_Game(self):
         lowest_row = max([x[0] for x in self.piece_loc])
@@ -238,11 +240,9 @@ class Board():
             self.Finish_Row_Animation(lowest_row)
             blank_row = list(['#'] + [' ' for _ in range(self.bwidth-1)])
             if row_diff_from_bottom > 0:
-                # remaining_rows = [[blank_row] for _ in range(row_diff_from_bottom)]
                 self.env_map = list([blank_row] + self.env_map[:lowest_row] + self.env_map[lowest_row + 1:])
             else:
                 self.env_map = list([blank_row] + self.env_map[:-1])
-            # self.env_map = list([blank_row] + self.env_map[:lowest_row - 1] + remaining_rows)
             self.Redraw_Board()
 
     def Finish_Row_Animation(self, row):
@@ -271,6 +271,31 @@ class Board():
             for col in range(1, self.bwidth):
                 self.stdscr.addstr(row, col, self.env_map[row][col])
 
+    def Check_End_Of_Game(self):
+        if any(p == '#' for p in self.env_map[1][3:7]):
+            # Write final piece to board to finalize the board the player lost on
+            for j in range(3, 7):
+                self.env_map[0][j] = '#'
+
+            msg = f"You've Lost! Here's the board you lost on: {np.matrix(self.env_map)}"
+            self.Quit_Game('lose')
+    
+    def Quit_Game(self, cond):
+        curses.nocbreak()
+        self.stdscr.keypad(False)
+        curses.echo()
+        curses.endwin()
+
+        if cond == 'lose':
+            print("You Lost! Here's the Board you lost on: ")
+            sys.exit(np.matrix(self.env_map))
+        
+        elif cond == 'quit':
+            sys.exit("Quit game.")
+
+
+
+
 
 
 
@@ -293,5 +318,4 @@ def main():
 # Driver
 main()
 
-# - 2 new fundamental pieces + rotation functions for those pieces
 # - Game over settings
