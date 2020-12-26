@@ -46,6 +46,7 @@ class Board():
         self.piece_style = None
         self.piece_loc = []
         self.piece_rot = False
+        self.piece_rot_setting = None
 
         # first piece
         self.game_start = True
@@ -188,7 +189,7 @@ class Board():
 
         elif self.piece_style == 'b':
 
-            if self.piece_rot == False:
+            if self.piece_rot == False and self.piece_rot_setting == None:
                 for i, j in self.piece_loc:
                     Erase(i, j)
 
@@ -198,20 +199,21 @@ class Board():
 
                 for n, (i, j) in enumerate(self.piece_loc):
                     if i == lower_row and j == left_col:
-                        self.piece_loc[n] = [i - 1, j]
+                        self.piece_loc[n] = [i - 1, j + 1]
                     elif i == lower_row and (j == left_col + 1):
-                        self.piece_loc[n] = [i, j - 1]
+                        pass
                     elif i == lower_row and (j == left_col + 2):
-                        self.piece_loc[n] = [i + 1, j - 2]
+                        self.piece_loc[n] = [i + 1, j - 1]
                     elif i == upper_row:
-                        self.piece_loc[n] = [i + 1, j]
+                        self.piece_loc[n] = [i + 1, j + 1]
 
                 for i, j in self.piece_loc:
                         Write(i, j, '#')
 
                 self.piece_rot = True
+                self.piece_rot_setting = 1
 
-            else:
+            elif (self.piece_rot == True) and (self.piece_rot_setting == 1):
                 for i, j in self.piece_loc:
                     Erase(i, j)
 
@@ -221,18 +223,67 @@ class Board():
 
                 for n, (i, j) in enumerate(self.piece_loc):
                     if i == upper_row and j == left_col:
-                        self.piece_loc[n] = [i + 1, j]
+                        self.piece_loc[n] = [i + 1, j + 1]
                     elif (i == upper_row + 1) and (j == left_col):
-                        self.piece_loc[n] = [i, j + 1]
+                        pass
                     elif (i == upper_row + 2) and (j == left_col):
-                        self.piece_loc[n] = [i - 1, j + 2]
+                        self.piece_loc[n] = [i - 1, j - 1]
                     elif j == right_col:
-                        self.piece_loc[n] = [i - 1, j]
+                        self.piece_loc[n] = [i + 1, j - 1]
+
+                for i, j in self.piece_loc:
+                        Write(i, j, '#')
+
+                self.piece_rot_setting = 2
+
+
+            elif (self.piece_rot == True) and (self.piece_rot_setting == 2):
+                for i, j in self.piece_loc:
+                    Erase(i, j)
+
+                upper_row = min(i[0] for i in self.piece_loc)
+                left_col = min([i[1] for i in self.piece_loc])
+                lower_row = upper_row + 1
+
+                for n, (i, j) in enumerate(self.piece_loc):
+                    if i == upper_row and j == left_col:
+                        self.piece_loc[n] = [i - 1, j + 1]
+                    elif (i == upper_row) and (j == left_col + 1):
+                        pass
+                    elif (i == upper_row) and (j == left_col + 2):
+                        self.piece_loc[n] = [i + 1, j - 1]
+                    elif i == lower_row:
+                        self.piece_loc[n] = [i - 1, j - 1]
+
+                for i, j in self.piece_loc:
+                        Write(i, j, '#')
+
+                self.piece_rot_setting = 3
+
+
+            elif (self.piece_rot == True) and (self.piece_rot_setting == 3):
+                for i, j in self.piece_loc:
+                    Erase(i, j)
+
+                right_col = max(i[1] for i in self.piece_loc)
+                upper_row = min([i[0] for i in self.piece_loc])
+                left_col = right_col - 1
+
+                for n, (i, j) in enumerate(self.piece_loc):
+                    if i == upper_row and j == right_col:
+                        self.piece_loc[n] = [i + 1, j + 1]
+                    elif (i == upper_row + 1) and (j == right_col):
+                        pass
+                    elif (i == upper_row + 2) and (j == right_col):
+                        self.piece_loc[n] = [i - 1, j - 1]
+                    elif j == left_col:
+                        self.piece_loc[n] = [i - 1, j + 1]
 
                 for i, j in self.piece_loc:
                         Write(i, j, '#')
 
                 self.piece_rot = False
+                self.piece_rot_setting = None
                 
 
 
