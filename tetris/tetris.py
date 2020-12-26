@@ -66,21 +66,36 @@ class Board():
             choice == 'a'
 
         if choice == 'Random':
-            self.Generate_Piece(random.choice(['a', 'b']))
+            self.Generate_Piece(random.choice(['a', 'b', 'c']))
 
         elif choice == 'a':
             self.piece_style = 'a'
+
             for i in range(3,7):
                 self.stdscr.addstr(0, i, '#')
                 self.piece_loc.append( [0, i] )
         
         elif choice == 'b':
             self.piece_style = 'b'
+
             for i in range(4,7):
                 self.stdscr.addstr(1, i, '#')
                 self.piece_loc.append( [1, i] )
+
             self.stdscr.addstr(0, 5, '#')
             self.piece_loc.append( [0, 5])
+
+        elif choice == 'c':
+            self.piece_style = 'c'
+
+            self.stdscr.addstr(0, 4, '#')
+            self.stdscr.addstr(0, 5, '#')
+            self.stdscr.addstr(1, 4, '#')
+            self.stdscr.addstr(1, 5, '#')
+
+            self.piece_loc.append([0, 4], [0, 5], [1, 4], [1, 5])
+
+
 
     
     def Move_Piece(self, k):
@@ -157,6 +172,8 @@ class Board():
         def Erase(row, col):
             self.stdscr.addstr(row, col, ' ')
 
+
+
         if self.piece_style == 'a':
 
             if self.piece_rot == False:
@@ -184,6 +201,7 @@ class Board():
                     Write(i, j, '#')
 
                 self.piece_rot = False
+
 
 
 
@@ -285,6 +303,9 @@ class Board():
                 self.piece_rot = False
                 self.piece_rot_setting = None
                 
+
+        else:
+            pass
 
 
 
