@@ -1,8 +1,6 @@
-import curses
+import curses, keyboard, sys, random
 import time
 from time import sleep
-import keyboard
-import sys
 import numpy as np
 
 class Board():
@@ -34,20 +32,44 @@ class Board():
 
         for i in range(self.bwidth+1):
             self.stdscr.addstr(self.blen, i, '#')
-
-        # Initialize piece settings
+        
+        # piece characteristics
+        self.piece_style = None
         self.piece_loc = []
         self.piece_rot = False
-        
+
         # first piece
-        for i in range(3,7):
-            self.stdscr.addstr(0, i, '#')
-            self.piece_loc.append( [0, i] )
+        self.game_start = True
+        self.Generate_Piece('a')
+        self.game_start = False
 
         # refresh screen
         self.stdscr.refresh()
 
 
+    def Generate_Piece(self, choice='Random'):
+        if self.game_start == False:
+            self.piece_loc = []
+            self.piece_rot = False
+
+        if choice == 'Random':
+            self.Generate_Piece(random.choice(['a', 'b']))
+
+        elif choice == 'a':
+            self.piece_style = 'a'
+            for i in range(3,7):
+                self.stdscr.addstr(0, i, '#')
+                self.piece_loc.append( [0, i] )
+        
+        elif choice == 'b':
+            self.piece_style = 'b'
+            for i in range(4,7):
+                self.stdscr.addstr(1, i, '#')
+                self.piece_loc.append( [1, i] )
+            self.stdscr.addstr(0, 5, '#')
+            self.piece_loc.append( [0, 5])
+
+    
     def Move_Piece(self, k):
 
         def Write(row, col, piece):
@@ -71,11 +93,11 @@ class Board():
                 if any((self.env_map[i+1][j] == '#') for i, j in self.piece_loc):
                     self.Write_Piece_To_Board()
                     self.Check_Advance_Game()
-                    self.Make_New_Piece()
+                    self.Generate_Piece()
             else:
                 self.Write_Piece_To_Board()
                 self.Check_Advance_Game()
-                self.Make_New_Piece()
+                self.Generate_Piece()
 
         elif k == curses.KEY_LEFT:
 
@@ -104,6 +126,21 @@ class Board():
                 self.piece_loc[n][1] = j+1
 
         elif k == ord('r'):
+            self.Rotate_Piece(self.piece_style)
+
+        elif k == ord('q'):
+            self.Quit_Game()
+
+
+
+    def Rotate_Piece(self, piece_style):
+        def Write(row, col, piece):
+            self.stdscr.addstr(row, col, piece)
+
+        def Erase(row, col):
+            self.stdscr.addstr(row, col, ' ')
+
+        if self.piece_style == 'a':
 
             if self.piece_rot == False:
                 left_col = min(i[1] for i in self.piece_loc)
@@ -132,9 +169,55 @@ class Board():
                 self.piece_rot = False
 
 
-        elif k == ord('q'):
-            self.Quit_Game()
 
+        elif self.piece_style == 'b':
+
+            if self.piece_rot == False:
+                for i, j in self.piece_loc:
+                    Erase(i, j)
+
+                left_col = min(i[1] for i in self.piece_loc)
+                lower_row = max([i[0] for i in self.piece_loc])
+                upper_row = lower_row - 1
+
+                for n, (i, j) in enumerate(self.piece_loc):
+                    if i == lower_row and j == left_col:
+                        self.piece_loc[n] = [i - 1, j]
+                    elif i == lower_row and (j == left_col + 1):
+                        self.piece_loc[n] = [i, j - 1]
+                    elif i == lower_row and (j == left_col + 2):
+                        self.piece_loc[n] = [i + 1, j - 2]
+                    elif i == upper_row:
+                        self.piece_loc[n] = [i + 1, j]
+
+                for i, j in self.piece_loc:
+                        Write(i, j, '#')
+
+                self.piece_rot = True
+
+            else:
+                for i, j in self.piece_loc:
+                    Erase(i, j)
+
+                upper_row = min(i[0] for i in self.piece_loc)
+                left_col = min([i[1] for i in self.piece_loc])
+                right_col = left_col + 1
+
+                for n, (i, j) in enumerate(self.piece_loc):
+                    if i == upper_row and j == left_col:
+                        self.piece_loc[n] = [i + 1, j]
+                    elif (i == upper_row + 1) and (j == left_col):
+                        self.piece_loc[n] = [i, j + 1]
+                    elif (i == upper_row + 2) and (j == left_col):
+                        self.piece_loc[n] = [i - 1, j + 2]
+                    elif j == right_col:
+                        self.piece_loc[n] = [i - 1, j]
+
+                for i, j in self.piece_loc:
+                        Write(i, j, '#')
+
+                self.piece_rot = False
+                
 
 
     def Quit_Game(self, msg="Quit Game."):
@@ -143,14 +226,6 @@ class Board():
         curses.echo()
         curses.endwin()
         sys.exit(msg)
-    
-    def Make_New_Piece(self):
-        self.piece_loc = []
-        self.piece_rot = False
-
-        for i in range(3,7):
-            self.stdscr.addstr(0, i, '#')
-            self.piece_loc.append( [0, i] )
 
     def Write_Piece_To_Board(self):
         for p0, p1 in self.piece_loc:
@@ -218,9 +293,5 @@ def main():
 # Driver
 main()
 
-# TODO: edit runner so that if a row completes, during the Flicker()
-# funciton, the program doesn't accept or process key inputs until
-# the animation is complete
-# 
 # - 2 new fundamental pieces + rotation functions for those pieces
 # - Game over settings
