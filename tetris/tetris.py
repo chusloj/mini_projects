@@ -301,13 +301,24 @@ class Board():
 
 def main():
 
-    b = Board(12, 9)
+
+    diff_dict = {1: 2.0,
+                 2: 1.5,
+                 3: 1.0}
+
+    print("What difficulty would you like to play on?")
+    print("1: Easy", "2: Medium", "3: Hard")
+
+    choice = input()
+    wait_time = diff_dict[int(choice)]
+
+    b = Board(12, 18)
 
     b.stdscr.timeout(0) # enables automatic drop of piece after 1 second
     k = b.stdscr.getch()
     while True:
         a = time.time()
-        while time.time() - a < 1.5:
+        while time.time() - a < wait_time:
             b.Move_Piece(k)
             b.stdscr.refresh()
             k = b.stdscr.getch()
@@ -318,4 +329,4 @@ def main():
 # Driver
 main()
 
-# - Game over settings
+# TODO: implement user-selected diffiulty
