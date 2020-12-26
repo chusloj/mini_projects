@@ -1,4 +1,5 @@
 import curses, keyboard, sys, random
+import os
 import time
 from time import sleep
 import numpy as np
@@ -32,6 +33,14 @@ class Board():
 
         for i in range(self.bwidth+1):
             self.stdscr.addstr(self.blen, i, '#')
+
+        # Draw instructions
+        move_inst = "MOVE: Down, Left, Right keys"
+        rot_inst = "ROTATE: r"
+        quit_inst = "QUIT: q"
+        self.stdscr.addstr(5, self.bwidth+5, move_inst)
+        self.stdscr.addstr(6, self.bwidth+5, rot_inst)
+        self.stdscr.addstr(7, self.bwidth+5, quit_inst)
         
         # piece characteristics
         self.piece_style = None
@@ -287,10 +296,12 @@ class Board():
         curses.endwin()
 
         if cond == 'lose':
+            os.system('clear')
             print("You Lost! Here's the Board you lost on: ")
             sys.exit(np.matrix(self.env_map))
         
         elif cond == 'quit':
+            os.system('clear')
             sys.exit("Quit game.")
 
 
@@ -307,6 +318,7 @@ def main():
                  3: 1.0}
 
     print("What difficulty would you like to play on?")
+    print("PRESS 'ENTER' AFTER MAKING YOUR CHOICE")
     print("1: Easy", "2: Medium", "3: Hard")
 
     choice = input()
@@ -328,5 +340,3 @@ def main():
 
 # Driver
 main()
-
-# TODO: implement user-selected diffiulty
