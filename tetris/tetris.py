@@ -50,7 +50,7 @@ class Board():
 
         # first piece
         self.game_start = True
-        self.Generate_Piece('a')
+        self.Generate_Piece('Random')
         self.game_start = False
 
         # refresh screen
@@ -61,6 +61,7 @@ class Board():
         if self.game_start == False:
             self.piece_loc = []
             self.piece_rot = False
+            self.piece_rot_setting = None
 
         if any(p == '#' for p in self.env_map[1]):
             choice == 'a'
@@ -88,12 +89,11 @@ class Board():
         elif choice == 'c':
             self.piece_style = 'c'
 
-            self.stdscr.addstr(0, 4, '#')
-            self.stdscr.addstr(0, 5, '#')
-            self.stdscr.addstr(1, 4, '#')
-            self.stdscr.addstr(1, 5, '#')
-
-            self.piece_loc.append([0, 4], [0, 5], [1, 4], [1, 5])
+            piece_list = [[0, 4], [0, 5], [1, 4], [1, 5]]
+            for i, j in piece_list:
+                self.stdscr.addstr(i, j, '#')
+                self.piece_loc.append([i, j])
+            del piece_list
 
 
 
@@ -207,7 +207,7 @@ class Board():
 
         elif self.piece_style == 'b':
 
-            if self.piece_rot == False and self.piece_rot_setting == None:
+            if (self.piece_rot == False) and (self.piece_rot_setting == None):
                 for i, j in self.piece_loc:
                     Erase(i, j)
 
@@ -304,7 +304,7 @@ class Board():
                 self.piece_rot_setting = None
                 
 
-        else:
+        elif self.piece_style == 'c':
             pass
 
 
@@ -397,7 +397,7 @@ def main():
     choice = input()
     wait_time = diff_dict[int(choice)]
 
-    b = Board(12, 18)
+    b = Board(18, 18)
 
     b.stdscr.timeout(0) # enables automatic drop of piece after 1 second
     k = b.stdscr.getch()
