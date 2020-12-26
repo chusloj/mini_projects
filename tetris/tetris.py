@@ -57,8 +57,6 @@ class Board():
             self.stdscr.addstr(row, col, ' ')
 
         if k == curses.KEY_DOWN:
-            # if max([i[0] for i in self.piece_loc]) == (self.blen - 1):
-                # return
 
             for i, j in self.piece_loc:
                 Erase(i, j)
@@ -80,6 +78,7 @@ class Board():
                 self.Make_New_Piece()
 
         elif k == curses.KEY_LEFT:
+
             if min([i[1] for i in self.piece_loc]) == 1:
                 return
 
@@ -92,6 +91,7 @@ class Board():
                 self.piece_loc[n][1] = j-1
 
         elif k == curses.KEY_RIGHT:
+
             if max([i[1] for i in self.piece_loc]) == (self.bwidth - 1):
                 return
 
@@ -104,6 +104,7 @@ class Board():
                 self.piece_loc[n][1] = j+1
 
         elif k == ord('r'):
+
             if self.piece_rot == False:
                 left_col = min(i[1] for i in self.piece_loc)
                 for i, j in self.piece_loc:
@@ -157,10 +158,16 @@ class Board():
 
     def Check_Advance_Game(self):
         lowest_row = max([x[0] for x in self.piece_loc])
+        row_diff_from_bottom = (self.blen-1) - lowest_row
         if all(p == '#' for p in self.env_map[lowest_row]):
             self.Finish_Row_Animation(lowest_row)
             blank_row = list(['#'] + [' ' for _ in range(self.bwidth-1)])
-            self.env_map = list([blank_row] + self.env_map[:-1])
+            if row_diff_from_bottom > 0:
+                # remaining_rows = [[blank_row] for _ in range(row_diff_from_bottom)]
+                self.env_map = list([blank_row] + self.env_map[:lowest_row] + self.env_map[lowest_row + 1:])
+            else:
+                self.env_map = list([blank_row] + self.env_map[:-1])
+            # self.env_map = list([blank_row] + self.env_map[:lowest_row - 1] + remaining_rows)
             self.Redraw_Board()
 
     def Finish_Row_Animation(self, row):
@@ -179,10 +186,8 @@ class Board():
             time.sleep(sleep_time)
 
         sleep_time = 0.2
-        self.stdscr.timeout(int(1e5)) # argument is read in MILLIseconds
         Flicker(sleep_time)
         Flicker(sleep_time)
-        self.stdscr.timeout(0)
 
 
     
@@ -212,3 +217,10 @@ def main():
 
 # Driver
 main()
+
+# TODO: edit runner so that if a row completes, during the Flicker()
+# funciton, the program doesn't accept or process key inputs until
+# the animation is complete
+# 
+# - 2 new fundamental pieces + rotation functions for those pieces
+# - Game over settings
