@@ -58,15 +58,18 @@ class Board():
 
 
     def Generate_Piece(self, choice='Random'):
+        
+
         if self.game_start == False:
             self.piece_loc = []
             self.piece_rot = False
             self.piece_rot_setting = None
 
-        if any(p == '#' for p in self.env_map[1]):
-            choice == 'a'
-
         if choice == 'Random':
+            
+            if any(p == '#' for p in self.env_map[0:2][3:7]):
+                self.Generate_Piece('a')
+
             self.Generate_Piece(random.choice(['a', 'b', 'c']))
 
         elif choice == 'a':
@@ -96,7 +99,6 @@ class Board():
             del piece_list
 
 
-
     
     def Move_Piece(self, k):
 
@@ -108,18 +110,19 @@ class Board():
 
 
         if k == curses.KEY_DOWN:
-        
+
             self.Check_End_Of_Game()
 
             for i, j in self.piece_loc:
                 Erase(i, j)
+            
             for i, j in self.piece_loc:
                 Write(i+1, j, '#')
 
             for n, (i, j) in enumerate(self.piece_loc):
                 self.piece_loc[n][0] = i+1
 
-            # for i, j in self.piece_loc:
+
             if not any(i == self.blen-1 for i, j in self.piece_loc):
                 if any((self.env_map[i+1][j] == '#') for i, j in self.piece_loc):
                     self.Write_Piece_To_Board()
@@ -147,6 +150,9 @@ class Board():
 
             for n, (i, j) in enumerate(self.piece_loc):
                 self.piece_loc[n][1] = j-1
+
+
+
 
         elif k == curses.KEY_RIGHT:
 
@@ -363,13 +369,9 @@ class Board():
                 self.stdscr.addstr(row, col, self.env_map[row][col])
 
     def Check_End_Of_Game(self):
-        if any(p == '#' for p in self.env_map[1][3:7]):
-            # Write final piece to board to finalize the board the player lost on
-            for j in range(3, 7):
-                self.env_map[0][j] = '#'
-
-            msg = f"You've Lost! Here's the board you lost on: {np.matrix(self.env_map)}"
-            self.Quit_Game('lose')
+        for i, j in self.piece_loc:
+            if any(p == '#' for p in self.env_map[i+1][j]):
+                self.Quit_Game('lose')
     
     def Quit_Game(self, cond):
         curses.nocbreak()
@@ -378,6 +380,7 @@ class Board():
         curses.endwin()
 
         if cond == 'lose':
+            self.Write_Piece_To_Board()
             os.system('clear')
             print("You Lost! Here's the Board you lost on: ")
             sys.exit(np.matrix(self.env_map))
@@ -407,7 +410,7 @@ def main():
     choice = input()
     wait_time = diff_dict[int(choice)]
 
-    b = Board(18, 18)
+    b = Board(14, 18)
 
     b.stdscr.timeout(0) # enables automatic drop of piece after 1 second
     k = b.stdscr.getch()
