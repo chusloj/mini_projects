@@ -135,6 +135,11 @@ class Board():
             if min([i[1] for i in self.piece_loc]) == 1:
                 return
 
+            left_barrier = min(i[1] for i in self.piece_loc)
+            for r in [i[0] for i in self.piece_loc]:
+                if '#' in self.env_map[r][left_barrier - 1]:
+                    return
+
             for i, j in self.piece_loc:
                 Erase(i, j)
             for i, j in self.piece_loc:
@@ -147,6 +152,11 @@ class Board():
 
             if max([i[1] for i in self.piece_loc]) == (self.bwidth - 1):
                 return
+
+            right_barrier = max(i[1] for i in self.piece_loc)
+            for r in [i[0] for i in self.piece_loc]:
+                if '#' in self.env_map[r][right_barrier + 1]:
+                    return
 
             for i, j in self.piece_loc:
                 Erase(i, j)
