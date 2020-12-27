@@ -67,10 +67,13 @@ class Board():
 
         if choice == 'Random':
             
-            if any(p == '#' for p in self.env_map[0:2][3:7]):
-                self.Generate_Piece('a')
+            for r in self.env_map[0:2]:
+                if any(p == '#' for p in r[1:]):
+                    self.Generate_Piece('a')
+                    return
 
-            self.Generate_Piece(random.choice(['a', 'b', 'c']))
+            else:
+                self.Generate_Piece(random.choice(['a', 'b', 'c']))
 
         elif choice == 'a':
             self.piece_style = 'a'
