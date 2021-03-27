@@ -6,5 +6,3 @@ Current projects:
 
 - [Vending machine](vending_machine)
 - [Tetris](tetris)
-	- [ ] `Python`
-	- [ ] `Java`
