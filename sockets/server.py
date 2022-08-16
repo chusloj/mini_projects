@@ -1,4 +1,5 @@
 import socket
+import time
 
 """
 Build a server using a TCP socket.
@@ -27,7 +28,18 @@ while True:
     message_send = "Message received!"
     message_send = f"{len(message_send):<{HEADERSIZE}}" + message_send
     communication_socket.send(message_send.encode('utf-8'))
+
+    time.sleep(3)
+
+    new_msg_counter = 1
+    while new_msg_counter <= 10:
+        message_send = f"This is new message {new_msg_counter}"
+        message_send = f"{len(message_send):<{HEADERSIZE}}" + message_send
+        communication_socket.send(message_send.encode('utf-8'))
+        new_msg_counter += 1
+        time.sleep(1)
     
+    print("All done.")
     communication_socket.close()
     print(f"Connection with {address} ended.")
-    # break
+    break
